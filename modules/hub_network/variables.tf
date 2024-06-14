@@ -1,3 +1,7 @@
+variable "resource_group_location" {
+  description = "The location of the resource group"
+}
+
 variable "on_prem_gateway_addess_space" {
   description = "A /27 under the VNet Address Space for our On-Prem Gateway"
   default     = "10.200.0.64/27"

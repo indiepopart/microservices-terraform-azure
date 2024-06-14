@@ -1,3 +1,12 @@
+resource "azurerm_resource_group" "rg_ecommerce_acr" {
+  name     = "rg-ecommerce-${var.resource_group_location}-acr"
+  location = var.resource_group_location
+
+  tags = {
+    displayName = "Container Registry Resource Group"
+  }
+}
+
 resource "azurerm_container_registry" "acr" {
   name                     = var.acr_name
   resource_group_name      = azurerm_resource_group.rg_ecommerce_acr.name

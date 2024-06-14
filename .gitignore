@@ -1,3 +1,5 @@
 .terraform*
 *.tfplan
 *.tfstate*
+*.txt
+
