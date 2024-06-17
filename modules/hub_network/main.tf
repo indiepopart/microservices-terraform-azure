@@ -1,8 +1,7 @@
 locals {
-  default_fw_pip_name = "pip-fw-${var.resource_group_location}-default"
-  hub_fw_name        = "fw-${var.resource_group_location}-hub"
-  hub_vnet_name      = "vnet-${var.resource_group_location}-hub"
-  hub_la_name        = "${random_pet.hub_log_analytics_name.id}"
+  fw_pip_name   = "pip-fw-${var.resource_group_location}-default"
+  hub_fw_name   = "fw-${var.resource_group_location}-hub"
+  hub_vnet_name = "vnet-${var.resource_group_location}-hub"
 }
 
 resource "azurerm_resource_group" "rg_hub_networks" {
@@ -12,10 +11,6 @@ resource "azurerm_resource_group" "rg_hub_networks" {
   tags = {
     displayName = "Resource Group for Hub networks"
   }
-}
-
-resource "random_pet" "hub_log_analytics_name" {
-  prefix = "la-networking-hub-${var.resource_group_location}"
 }
 
 resource "azurerm_virtual_network" "hub_vnet" {
@@ -50,8 +45,8 @@ resource "azurerm_subnet" "bastion_subnet" {
   service_endpoints    = ["Microsoft.KeyVault"]
 }
 
-resource "azurerm_public_ip" "default_fw_pip" {
-  name                = local.default_fw_pip_name
+resource "azurerm_public_ip" "hub_fw_pip" {
+  name                = local.fw_pip_name
   location            = azurerm_resource_group.rg_hub_networks.location
   resource_group_name = azurerm_resource_group.rg_hub_networks.name
   allocation_method   = "Static"
@@ -71,9 +66,9 @@ resource "azurerm_firewall" "azure_firewall" {
   threat_intel_mode   = "Alert"
 
   ip_configuration {
-    name                 = local.default_fw_pip_name
+    name                 = local.fw_pip_name
     subnet_id            = azurerm_subnet.azure_firewall_subnet.id
-    public_ip_address_id = azurerm_public_ip.default_fw_pip.id
+    public_ip_address_id = azurerm_public_ip.hub_fw_pip.id
   }
 }
 

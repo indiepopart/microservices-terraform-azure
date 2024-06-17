@@ -3,5 +3,8 @@ variable "resource_group_location" {
   default     = "westus2"
 }
 
-
+variable "application_id" {
+  description = "The application id"
+  default = "jhipster-microservices"
+}
 

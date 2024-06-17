@@ -39,7 +39,6 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   workload_identity_enabled = true
   node_resource_group = "rg-${random_pet.azurerm_kubernetes_cluster_name.id}-nodepools"
 
-
   tags = {
     displayName = "Kubernetes Cluster"
   }
@@ -61,6 +60,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     node_count = var.node_count
     zones = ["1","3"]
     type = "VirtualMachineScaleSets"
+    vnet_subnet_id = var.vnet_subnet_id
   }
   linux_profile {
     admin_username = var.username
