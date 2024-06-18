@@ -1,7 +1,7 @@
 locals {
-  cluster_vnet_name = "vnet-hub-spoke-${var.application_id}-00"
-  route_table_name = "route-${local.cluster_vnet_name}-clusternodes-to-hub"
-  spoke_rg_name = "rg-enterprise-networking-spokes-${var.resource_group_location}"
+  spoke_vnet_name = "vnet-${var.resource_group_location}-spoke"
+  route_table_name = "route-spoke-to-hub"
+  spoke_rg_name = "rg-spokes-${var.resource_group_location}"
 
 }
 
@@ -15,7 +15,7 @@ resource "azurerm_resource_group" "rg_spoke_networks" {
 }
 
 resource "azurerm_virtual_network" "spoke_vnet" {
-  name                = local.cluster_vnet_name
+  name                = local.spoke_vnet_name
   location            = azurerm_resource_group.rg_spoke_networks.location
   resource_group_name = azurerm_resource_group.rg_spoke_networks.name
   address_space       = [var.spoke_vnet_address_space]
@@ -47,7 +47,7 @@ resource "azurerm_subnet_route_table_association" "cluster_nodes_route_table" {
 }
 
 resource "azurerm_subnet" "ingress_services_subnet" {
-  name                 = "snet-clusternodes"
+  name                 = "snet-ingress-services"
   resource_group_name  = azurerm_resource_group.rg_spoke_networks.name
   virtual_network_name = azurerm_virtual_network.spoke_vnet.name
   address_prefixes       = [var.ingress_services_address_space]
@@ -55,7 +55,7 @@ resource "azurerm_subnet" "ingress_services_subnet" {
 }
 
 resource "azurerm_subnet" "application_gateways_subnet" {
-  name                 = "snet-clusternodes"
+  name                 = "snet-application-gateways"
   resource_group_name  = azurerm_resource_group.rg_spoke_networks.name
   virtual_network_name = azurerm_virtual_network.spoke_vnet.name
   address_prefixes       = [var.application_gateways_address_space]

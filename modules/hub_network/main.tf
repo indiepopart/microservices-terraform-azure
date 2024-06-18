@@ -2,10 +2,11 @@ locals {
   fw_pip_name   = "pip-fw-${var.resource_group_location}-default"
   hub_fw_name   = "fw-${var.resource_group_location}-hub"
   hub_vnet_name = "vnet-${var.resource_group_location}-hub"
+  hub_rg_name   = "rg-hubs-${var.resource_group_location}"
 }
 
 resource "azurerm_resource_group" "rg_hub_networks" {
-  name = "rg-enterprise-networking-hubs-${var.resource_group_location}"
+  name = local.hub_rg_name
   location = var.resource_group_location
 
   tags = {
@@ -50,10 +51,11 @@ resource "azurerm_public_ip" "hub_fw_pip" {
   location            = azurerm_resource_group.rg_hub_networks.location
   resource_group_name = azurerm_resource_group.rg_hub_networks.name
   allocation_method   = "Static"
+  sku                 = "Standard"
+  zones              = ["1", "3"]
+  idle_timeout_in_minutes = 4
+  ip_version = "IPv4"
 
-  tags = {
-    environment = "Production"
-  }
 }
 
 resource "azurerm_firewall" "azure_firewall" {
