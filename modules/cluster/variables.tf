@@ -31,3 +31,9 @@ variable "acr_id" {
 variable "vnet_subnet_id" {
 
 }
+
+/**
+variable "application_gateway_id" {
+
+}
+**/

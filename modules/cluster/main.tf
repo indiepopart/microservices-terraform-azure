@@ -37,7 +37,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   dns_prefix          = random_pet.azurerm_kubernetes_cluster_name.id
   oidc_issuer_enabled = true
   workload_identity_enabled = true
-  node_resource_group = "rg-${random_pet.azurerm_kubernetes_cluster_name.id}-nodepools"
+  #node_resource_group = "rg-${random_pet.azurerm_kubernetes_cluster_name.id}-nodepools"
 
   tags = {
     displayName = "Kubernetes Cluster"
@@ -70,13 +70,19 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
   }
   network_profile {
-    network_plugin    = "kubenet"
+    network_plugin    = "azure"
+    network_policy  = "azure"
+    outbound_type = "userDefinedRouting"
     load_balancer_sku = "standard"
-    outbound_type = "loadBalancer"
-    pod_cidr = "10.244.0.0/16"
-    service_cidr = "10.0.0.0/16"
-    dns_service_ip = "10.0.0.10"
+    service_cidr = "172.16.0.0/16"
+    dns_service_ip = "172.16.0.10"
+
   }
+  /**
+  ingress_application_gateway {
+    enabled = true
+    application_gateway_id = var.application_gateway_id
+  }**/
 }
 
 
@@ -90,5 +96,12 @@ resource "azurerm_role_assignment" "cluster_identity_acrpull_role_assignment" {
 resource "azurerm_role_assignment" "cluster_nodepool_role_assignment" {
   scope                = azurerm_kubernetes_cluster.k8s.node_resource_group_id
   role_definition_name = "Virtual Machine Contributor"
+  principal_id         = azurerm_kubernetes_cluster.k8s.kubelet_identity[0].object_id
+}
+
+
+resource "azurerm_role_assignment" "cluster_vnet_role_assignment" {
+  scope                = var.vnet_subnet_id
+  role_definition_name = "Network Contributor"
   principal_id         = azurerm_kubernetes_cluster.k8s.kubelet_identity[0].object_id
 }

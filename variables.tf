@@ -8,3 +8,7 @@ variable "application_id" {
   default = "jhipster-microservices"
 }
 
+variable "cluster_nodes_address_space" {
+  description = "The address space for the cluster nodes."
+  default = "10.240.0.0/22"
+}

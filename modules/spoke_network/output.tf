@@ -5,3 +5,31 @@ output "spoke_vnet_id" {
 output "cluster_nodes_subnet_id" {
   value = azurerm_subnet.cluster_nodes_subnet.id
 }
+
+output "cluster_nodes_route_table_association_id" {
+  value = azurerm_subnet_route_table_association.cluster_nodes_route_table.id
+}
+
+output "spoke_pip" {
+  value = azurerm_public_ip.spoke_pip.ip_address
+}
+
+output "hub_to_spoke_peer_id" {
+  value = azurerm_virtual_network_peering.hub_to_spoke_peer.id
+}
+
+output "spoke_to_hub_peer_id" {
+  value = azurerm_virtual_network_peering.spoke_to_hub_peer.id
+}
+
+output "spoke_rg_name" {
+  value = azurerm_resource_group.rg_spoke_networks.name
+}
+
+output "spoke_rg_location" {
+  value = azurerm_resource_group.rg_spoke_networks.location
+}
+
+output "spoke_rg_id" {
+  value = azurerm_resource_group.rg_spoke_networks.id
+}

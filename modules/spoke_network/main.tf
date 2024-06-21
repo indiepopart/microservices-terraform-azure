@@ -1,8 +1,7 @@
 locals {
   spoke_vnet_name = "vnet-${var.resource_group_location}-spoke"
-  route_table_name = "route-spoke-to-hub"
   spoke_rg_name = "rg-spokes-${var.resource_group_location}"
-
+  pip_name = "pip-${var.application_id}-00"
 }
 
 resource "azurerm_resource_group" "rg_spoke_networks" {
@@ -29,7 +28,7 @@ resource "azurerm_subnet" "cluster_nodes_subnet" {
 }
 
 resource "azurerm_route_table" "spoke_route_table" {
-  name                = local.route_table_name
+  name                = "route-spoke-to-hub"
   location            = azurerm_resource_group.rg_spoke_networks.location
   resource_group_name = azurerm_resource_group.rg_spoke_networks.name
 
@@ -61,3 +60,52 @@ resource "azurerm_subnet" "application_gateways_subnet" {
   address_prefixes       = [var.application_gateways_address_space]
 
 }
+
+
+resource "azurerm_virtual_network_peering" "spoke_to_hub_peer" {
+  name                      = "spoke-to-hub"
+  resource_group_name       = azurerm_resource_group.rg_spoke_networks.name
+  virtual_network_name      = azurerm_virtual_network.spoke_vnet.name
+  remote_virtual_network_id = var.hub_vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic = true
+  allow_gateway_transit = false
+  use_remote_gateways = false
+}
+
+resource "azurerm_virtual_network_peering" "hub_to_spoke_peer" {
+  name                      = "hub-to-spoke"
+  resource_group_name       = var.hub_rg_name
+  virtual_network_name      = var.hub_vnet_name
+  remote_virtual_network_id = azurerm_virtual_network.spoke_vnet.id
+  allow_forwarded_traffic = false
+  allow_virtual_network_access = true
+  allow_gateway_transit = false
+  use_remote_gateways = false
+}
+
+resource "azurerm_private_dns_zone" "dns_zone_acr" {
+  name                = "privatelink.azurecr.io"
+  resource_group_name = azurerm_resource_group.rg_spoke_networks.name
+}
+
+
+resource "azurerm_private_dns_zone_virtual_network_link" "acr_network_link" {
+  name                  = "dns-link-acr"
+  resource_group_name   = azurerm_resource_group.rg_spoke_networks.name
+  private_dns_zone_name = azurerm_private_dns_zone.dns_zone_acr.name
+  virtual_network_id    = azurerm_virtual_network.spoke_vnet.id
+}
+
+resource "azurerm_public_ip" "spoke_pip" {
+  name                = local.pip_name
+  location            = azurerm_resource_group.rg_spoke_networks.location
+  resource_group_name = azurerm_resource_group.rg_spoke_networks.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  zones              = ["1", "3"]
+  idle_timeout_in_minutes = 4
+  ip_version = "IPv4"
+}
+
+
