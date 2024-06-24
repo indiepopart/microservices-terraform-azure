@@ -33,11 +33,17 @@ module "spoke_network" {
   source = "./modules/spoke_network"
   resource_group_location    = azurerm_resource_group.rg_ecommerce.location
   hub_fw_private_ip          = module.hub_network.hub_fw_private_ip
+  hub_fw_public_ip           = module.hub_network.hub_fw_pip
   application_id             = var.application_id
   hub_vnet_id                = module.hub_network.hub_vnet_id
   hub_vnet_name              = module.hub_network.hub_vnet_name
   hub_rg_name                = module.hub_network.hub_rg_name
   cluster_nodes_address_space = var.cluster_nodes_address_space
+
+  depends_on = [
+    module.hub_network.hub_fw_pip_id,
+    module.hub_network.hub_vnet_id,
+  ]
 }
 
 
@@ -54,7 +60,10 @@ module "cluster" {
   depends_on = [
     module.spoke_network.cluster_nodes_route_table_association_id,
     module.spoke_network.spoke_to_hub_peer_id,
-    module.spoke_network.hub_to_spoke_peer_id
+    module.spoke_network.hub_to_spoke_peer_id,
+    module.hub_network.fw_net_rule_org_wide_id,
+    module.hub_network.fw_net_rule_aks_global_id,
+    module.hub_network.fw_app_rule_aks_global_id
   ]
 }
 

@@ -6,6 +6,10 @@ variable "hub_fw_private_ip" {
   description = "The private IP address of the hub firewall."
 }
 
+variable "hub_fw_public_ip" {
+  description = "The public IP address of the hub firewall."
+}
+
 variable "application_id" {
 
 }

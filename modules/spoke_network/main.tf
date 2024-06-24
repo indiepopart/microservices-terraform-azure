@@ -38,6 +38,11 @@ resource "azurerm_route_table" "spoke_route_table" {
     next_hop_type       = "VirtualAppliance"
     next_hop_in_ip_address = var.hub_fw_private_ip
   }
+  route {
+    name                = "r-internet"
+    address_prefix      = "${var.hub_fw_public_ip}/32"
+    next_hop_type       = "Internet"
+  }
 }
 
 resource "azurerm_subnet_route_table_association" "cluster_nodes_route_table" {
@@ -71,6 +76,11 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub_peer" {
   allow_forwarded_traffic = true
   allow_gateway_transit = false
   use_remote_gateways = false
+
+  depends_on = [
+    var.hub_vnet_id,
+    azurerm_virtual_network.spoke_vnet
+  ]
 }
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke_peer" {
@@ -82,6 +92,12 @@ resource "azurerm_virtual_network_peering" "hub_to_spoke_peer" {
   allow_virtual_network_access = true
   allow_gateway_transit = false
   use_remote_gateways = false
+
+  depends_on = [
+    var.hub_vnet_id,
+    azurerm_virtual_network.spoke_vnet
+  ]
+
 }
 
 resource "azurerm_private_dns_zone" "dns_zone_acr" {

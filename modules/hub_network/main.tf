@@ -66,6 +66,7 @@ resource "azurerm_firewall" "azure_firewall" {
   sku_tier            = "Standard"
   zones               = ["1", "3"]
   threat_intel_mode   = "Alert"
+  dns_proxy_enabled    = true
 
   ip_configuration {
     name                 = local.fw_pip_name
@@ -177,6 +178,7 @@ resource "azurerm_firewall_network_rule_collection" "aks_global_allow" {
 
     destination_ports = [
       "1194",
+      "123"
     ]
 
     destination_addresses = [
@@ -205,6 +207,29 @@ resource "azurerm_firewall_network_rule_collection" "aks_global_allow" {
     ]
 
   }
+
+  rule {
+    name = "docker"
+
+    source_ip_groups = [
+      azurerm_ip_group.aks_ip_group.id,
+    ]
+
+    protocols = [
+      "TCP"
+    ]
+
+    destination_ports = [
+       "443"
+    ]
+
+    destination_fqdns = [
+      "docker.io",
+      "registry-1.docker.io",
+      "production.cloudflare.docker.com"
+    ]
+  }
+
 
 }
 
@@ -373,6 +398,19 @@ resource "azurerm_firewall_application_rule_collection" "aks_global_allow" {
       port = "443"
       type = "Https"
     }
+  }
+
+  rule {
+    name = "azure-kubernetes-service"
+
+    source_ip_groups = [
+      azurerm_ip_group.aks_ip_group.id,
+    ]
+
+    fqdn_tags = [
+      "AzureKubernetesService"
+    ]
+
   }
 
 
