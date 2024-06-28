@@ -1,5 +1,5 @@
 locals {
-  fw_pip_name   = "pip-fw-${var.resource_group_location}-default"
+  pip_name   = "pip-fw-${var.resource_group_location}-default"
   hub_fw_name   = "fw-${var.resource_group_location}-hub"
   hub_vnet_name = "vnet-${var.resource_group_location}-hub"
   hub_rg_name   = "rg-hubs-${var.resource_group_location}"
@@ -46,8 +46,8 @@ resource "azurerm_subnet" "bastion_subnet" {
   service_endpoints    = ["Microsoft.KeyVault"]
 }
 
-resource "azurerm_public_ip" "hub_fw_pip" {
-  name                = local.fw_pip_name
+resource "azurerm_public_ip" "hub_pip" {
+  name                = local.pip_name
   location            = azurerm_resource_group.rg_hub_networks.location
   resource_group_name = azurerm_resource_group.rg_hub_networks.name
   allocation_method   = "Static"
@@ -69,9 +69,9 @@ resource "azurerm_firewall" "azure_firewall" {
   dns_proxy_enabled    = true
 
   ip_configuration {
-    name                 = local.fw_pip_name
+    name                 = local.pip_name
     subnet_id            = azurerm_subnet.azure_firewall_subnet.id
-    public_ip_address_id = azurerm_public_ip.hub_fw_pip.id
+    public_ip_address_id = azurerm_public_ip.hub_pip.id
   }
 }
 
@@ -413,6 +413,22 @@ resource "azurerm_firewall_application_rule_collection" "aks_global_allow" {
 
   }
 
+  rule {
+    name = "auth0"
+
+    source_ip_groups = [
+      azurerm_ip_group.aks_ip_group.id,
+    ]
+
+    target_fqdns = [
+      "*.auth0.com"
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+  }
 
 }
 

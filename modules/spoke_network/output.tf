@@ -6,12 +6,25 @@ output "cluster_nodes_subnet_id" {
   value = azurerm_subnet.cluster_nodes_subnet.id
 }
 
+output "application_gateway_subnet_id" {
+  value = azurerm_subnet.application_gateways_subnet.id
+}
+
 output "cluster_nodes_route_table_association_id" {
   value = azurerm_subnet_route_table_association.cluster_nodes_route_table.id
 }
 
 output "spoke_pip" {
   value = azurerm_public_ip.spoke_pip.ip_address
+}
+
+output "spoke_pip_id" {
+  value = azurerm_public_ip.spoke_pip.id
+}
+
+output "spoke_pip_name" {
+  value = azurerm_public_ip.spoke_pip.name
+
 }
 
 output "hub_to_spoke_peer_id" {

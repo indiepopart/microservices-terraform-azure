@@ -14,8 +14,8 @@ output "hub_rg_name" {
   value = azurerm_resource_group.rg_hub_networks.name
 }
 
-output "hub_fw_pip" {
-  value = azurerm_public_ip.hub_fw_pip.ip_address
+output "hub_pip" {
+  value = azurerm_public_ip.hub_pip.ip_address
 }
 
 output "fw_net_rule_org_wide_id" {

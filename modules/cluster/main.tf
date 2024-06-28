@@ -78,11 +78,10 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     dns_service_ip = "172.16.0.10"
 
   }
-  /**
+
   ingress_application_gateway {
-    enabled = true
-    application_gateway_id = var.application_gateway_id
-  }**/
+    gateway_id = var.application_gateway_id
+  }
 }
 
 

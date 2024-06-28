@@ -32,11 +32,11 @@ variable "vnet_subnet_id" {
 
 }
 
-/**
-variable "application_gateway_id" {
 
+variable "application_gateway_id" {
+  description = "The id of the application gateway"
 }
-**/
+
 
 variable "vm_size" {
   type        = string
