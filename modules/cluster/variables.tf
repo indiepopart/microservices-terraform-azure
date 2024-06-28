@@ -20,7 +20,7 @@ variable "username" {
 variable "node_count" {
   type        = number
   description = "The initial quantity of nodes for the node pool."
-  default     = 2
+  default     = 3
 }
 
 
@@ -37,3 +37,9 @@ variable "application_gateway_id" {
 
 }
 **/
+
+variable "vm_size" {
+  type        = string
+  description = "The size of the Virtual Machine."
+  default     = "Standard_B2s_v2"
+}

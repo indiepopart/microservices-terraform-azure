@@ -52,7 +52,7 @@ resource "azurerm_public_ip" "hub_fw_pip" {
   resource_group_name = azurerm_resource_group.rg_hub_networks.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  zones              = ["1", "3"]
+  zones              = ["1", "2", "3"]
   idle_timeout_in_minutes = 4
   ip_version = "IPv4"
 
@@ -64,7 +64,7 @@ resource "azurerm_firewall" "azure_firewall" {
   resource_group_name = azurerm_resource_group.rg_hub_networks.name
   sku_name            = "AZFW_VNet"
   sku_tier            = "Standard"
-  zones               = ["1", "3"]
+  zones               = ["1", "2", "3"]
   threat_intel_mode   = "Alert"
   dns_proxy_enabled    = true
 

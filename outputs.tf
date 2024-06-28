@@ -6,3 +6,4 @@ output "resource_group_name" {
 output "hub_vnet_id" {
   value = module.hub_network.hub_vnet_id
 }
+

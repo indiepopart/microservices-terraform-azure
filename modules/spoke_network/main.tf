@@ -119,7 +119,7 @@ resource "azurerm_public_ip" "spoke_pip" {
   resource_group_name = azurerm_resource_group.rg_spoke_networks.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  zones              = ["1", "3"]
+  zones              = ["1","2", "3"]
   idle_timeout_in_minutes = 4
   ip_version = "IPv4"
 }
